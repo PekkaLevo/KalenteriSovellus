@@ -1,3 +1,4 @@
+// Komponentit
 import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
 import { StyleSheet, Text, View, Dimensions } from "react-native";
@@ -8,8 +9,10 @@ import {
   LocaleConfig,
 } from "react-native-calendars";
 
+// Haetaan laitteen näytön leveys kalenterin leveyden asettamista varten
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
+// Kalenterin väriteema ja ulkoasu
 const calendarTheme = {
   backgroundColor: "#ffff",
   calendarBackground: "#ffff",
@@ -21,6 +24,7 @@ const calendarTheme = {
   textDisabledColor: "#dd99ee",
 };
 
+// Kuukausien nimet kalenterikomponenttiin
 LocaleConfig.locales["fi"] = {
   monthNames: [
     "Tammikuu",
@@ -36,6 +40,7 @@ LocaleConfig.locales["fi"] = {
     "Marraskuu",
     "Joulukuu",
   ],
+  // Kuukausien nimet lyhennettyinä kalenterikomponenttiin
   monthNamesShort: [
     "Tammi",
     "Helmi",
@@ -50,6 +55,7 @@ LocaleConfig.locales["fi"] = {
     "Marras",
     "Joulu",
   ],
+  // Päivien nimet kalenterikomponenttiin
   dayNames: [
     "Maanantai",
     "Tiistai",
@@ -59,18 +65,22 @@ LocaleConfig.locales["fi"] = {
     "Lauantai",
     "Sunnuntai",
   ],
+  //Päivien nimet lyhennettyinä ja annetaan tämän hetkiselle päivälle suomenkielinen nimi
   dayNamesShort: ["Ma", "Ti", "Ke", "To", "Pe", "La", "Su"],
   today: "Tänään",
 };
 
+// Asetetaan oletuskieleksi suomi
 LocaleConfig.defaultLocale = "fi";
 
 export default function App() {
+  // Valitun päivän tila, jota päivitetään käyttäjän painalluksesta
   const [selected, setSelected] = useState("");
 
   return (
     <View style={styles.container}>
       <View style={styles.calendarWrap}>
+        {/* Horisontaalisesti vieritettävä kalenteri, jossa näytetään useita kuukausia */}
         <CalendarList
           horizontal
           pagingEnabled
@@ -78,9 +88,9 @@ export default function App() {
           calendarWidth={SCREEN_WIDTH}
           style={styles.calendar}
           theme={calendarTheme}
-          pastScrollRange={50}
-          futureScrollRange={50}
-          onDayPress={(day) => setSelected(day.dateString)}
+          pastScrollRange={50} // Max määrä kuukausia, joita voi selata taaksepäin
+          futureScrollRange={50} // Max määrä kuukausia, joita voi selata eteenpäin
+          onDayPress={(day) => setSelected(day.dateString)} // Päivän valinta
           markedDates={{
             [selected]: {
               selected: true,
@@ -95,6 +105,7 @@ export default function App() {
   );
 }
 
+// Tyylit sovelluksen asetteluun ja kalenterin ulkoasuun
 const styles = StyleSheet.create({
   container: {
     flex: 1,
