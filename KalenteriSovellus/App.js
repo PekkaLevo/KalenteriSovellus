@@ -1,4 +1,4 @@
-// Komponentit
+// importoidaan kirjastot
 import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
 import { StyleSheet, Text, View, Dimensions } from "react-native";
@@ -8,6 +8,107 @@ import {
   Agenda,
   LocaleConfig,
 } from "react-native-calendars";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import MapView, { Marker } from "react-native-maps";
+
+const Pino = createNativeStackNavigator();
+
+function Tapahtumat({ navigation }) {
+  // valitun päivän tila
+  const [selected, setSelected] = useState("");
+
+  /* -------------------
+    Tapahtuma komponentti 
+    Näyttää horisontaalisesti selattavan kalenterin
+    --------------------
+  */
+  return (
+    <View style={styles.container}>
+      <View style={styles.calendarWrap}>
+        {/* Kalenteri */}
+        <CalendarList
+          horizontal
+          pagingEnabled
+          scrollEnabled
+          calendarWidth={SCREEN_WIDTH}
+          style={styles.calendar}
+          theme={calendarTheme}
+          pastScrollRange={50} // Max määrä kuukausia, joita voi selata taaksepäin
+          futureScrollRange={50} // Max määrä kuukausia, joita voi selata eteenpäin
+          onDayPress={(day) => setSelected(day.dateString)} // Päivän valinta
+          markedDates={{
+            [selected]: {
+              selected: true,
+              disableTouchEvent: true,
+              selectedDotColor: "green",
+            },
+          }}
+          showScrollIndicator={false}
+        />
+      </View>
+      {/* Valittu päivä ja linkki karttaan*/}
+      <View style={{ marginTop: 20, alignItems: "center" }}>
+        <Text>Valittu päivä: {selected || "-"}</Text>
+        <Text
+          onPress={() =>
+            navigation.navigate("Kartta", {
+              tapahtuma: {
+                otsikko: "Tapahtuma1",
+                lat: 60.1699,
+                lon: 24.9384,
+              },
+            })
+          }
+          style={{
+            marginTop: 10,
+            color: "green",
+            fontWeight: "bold",
+            textDecorationLine: "underline",
+          }}
+        >
+          Näytä kartalta
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+/* ----------------------
+  Kartta komponentti
+  Näyttää tapahtumien sijainnin kartalta
+  -----------------------
+*/
+
+function Kartta({ route }) {
+  const tapahtuma = route.params?.tapahtuma || {
+    // Haetaan tapahtuma navigaation avulla 
+    // otsikko, lat ja lon-tiedot saadaan navigoinnin mukana route-parametrista
+    otsikko: "paikka1",
+    lat: 60.1699,
+    lon: 24.3984,
+  };
+  return (
+    <View style={{ flex: 1 }}>
+      {/* MapView näyttää kartan*/}
+      <MapView
+        style={{ flex: 1 }}
+        initialRegion={{
+          latitude: tapahtuma.lat,
+          longitude: tapahtuma.lon,
+          latitudeDelta: 0.02,
+          longitudeDelta: 0.02,
+        }}
+      >
+        {/* Marker osoittaa kordinaattien sijainnin*/}
+        <Marker
+          coordinate={{ latitude: tapahtuma.lat, longitude: tapahtuma.lon }}
+          title={tapahtuma.otsikko}
+        />
+      </MapView>
+    </View>
+  );
+}
 
 // Haetaan laitteen näytön leveys kalenterin leveyden asettamista varten
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -72,38 +173,6 @@ LocaleConfig.locales["fi"] = {
 
 // Asetetaan oletuskieleksi suomi
 LocaleConfig.defaultLocale = "fi";
-
-export default function App() {
-  // Valitun päivän tila, jota päivitetään käyttäjän painalluksesta
-  const [selected, setSelected] = useState("");
-
-  return (
-    <View style={styles.container}>
-      <View style={styles.calendarWrap}>
-        {/* Horisontaalisesti vieritettävä kalenteri, jossa näytetään useita kuukausia */}
-        <CalendarList
-          horizontal
-          pagingEnabled
-          scrollEnabled
-          calendarWidth={SCREEN_WIDTH}
-          style={styles.calendar}
-          theme={calendarTheme}
-          pastScrollRange={50} // Max määrä kuukausia, joita voi selata taaksepäin
-          futureScrollRange={50} // Max määrä kuukausia, joita voi selata eteenpäin
-          onDayPress={(day) => setSelected(day.dateString)} // Päivän valinta
-          markedDates={{
-            [selected]: {
-              selected: true,
-              disableTouchEvent: true,
-              selectedDotColor: "green",
-            },
-          }}
-          showScrollIndicator={false}
-        />
-      </View>
-    </View>
-  );
-}
 
 // Tyylit sovelluksen asetteluun ja kalenterin ulkoasuun
 const styles = StyleSheet.create({
