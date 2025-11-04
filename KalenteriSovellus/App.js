@@ -174,6 +174,31 @@ function Kartta({ route }) {
   );
 }
 
+/* --------------
+  Pääkomponentti
+  ---------------
+  Navigointi + Tapahtumat- ja Kartta-ruudut
+*/  
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Pino.Navigator>
+        <Pino.Screen
+          name="Tapahtumat"
+          component={Tapahtumat}
+          options={{headerTitle: "Tapahtumat"}}
+        />
+        <Pino.Screen
+        name="Kartta"
+        component={Kartta}
+        options={{headerTitle: "Kartta"}}
+        />  
+      </Pino.Navigator>
+    </NavigationContainer>
+  );
+}
+
 // Tyylit sovelluksen asetteluun ja kalenterin ulkoasuun
 const styles = StyleSheet.create({
   container: {
