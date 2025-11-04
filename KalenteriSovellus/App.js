@@ -14,6 +14,70 @@ import MapView, { Marker } from "react-native-maps";
 
 const Pino = createNativeStackNavigator();
 
+// Haetaan laitteen näytön leveys kalenterin leveyden asettamista varten
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+
+// Kalenterin väriteema ja ulkoasu
+const calendarTheme = {
+  backgroundColor: "#ffff",
+  calendarBackground: "#ffff",
+  textSectionTitleColor: "#b6c1cd",
+  selectedDayBackgroundColor: "#00adf5",
+  selectedDayTextColor: "#ffff",
+  todayTextColor: "#00adf5",
+  dayTextColor: "#2d4150",
+  textDisabledColor: "#dd99ee",
+};
+
+// Kuukausien nimet kalenterikomponenttiin
+LocaleConfig.locales["fi"] = {
+  monthNames: [
+    "Tammikuu",
+    "Helmikuu",
+    "Maaliskuu",
+    "Huhtikuu",
+    "Toukokuu",
+    "Kesäkuu",
+    "Heinäkuu",
+    "Elokuu",
+    "Syyskuu",
+    "Lokakuu",
+    "Marraskuu",
+    "Joulukuu",
+  ],
+  // Kuukausien nimet lyhennettyinä kalenterikomponenttiin
+  monthNamesShort: [
+    "Tammi",
+    "Helmi",
+    "Maalis",
+    "Huhti",
+    "Touko",
+    "Kesä",
+    "Heinä",
+    "Elo",
+    "Syys",
+    "Loka",
+    "Marras",
+    "Joulu",
+  ],
+  // Päivien nimet kalenterikomponenttiin
+  dayNames: [
+    "Maanantai",
+    "Tiistai",
+    "Keskiviikko",
+    "Torstai",
+    "Perjantai",
+    "Lauantai",
+    "Sunnuntai",
+  ],
+  //Päivien nimet lyhennettyinä ja annetaan tämän hetkiselle päivälle suomenkielinen nimi
+  dayNamesShort: ["Ma", "Ti", "Ke", "To", "Pe", "La", "Su"],
+  today: "Tänään",
+};
+
+// Asetetaan oletuskieleksi suomi
+LocaleConfig.defaultLocale = "fi";
+
 function Tapahtumat({ navigation }) {
   // valitun päivän tila
   const [selected, setSelected] = useState("");
@@ -109,70 +173,6 @@ function Kartta({ route }) {
     </View>
   );
 }
-
-// Haetaan laitteen näytön leveys kalenterin leveyden asettamista varten
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
-
-// Kalenterin väriteema ja ulkoasu
-const calendarTheme = {
-  backgroundColor: "#ffff",
-  calendarBackground: "#ffff",
-  textSectionTitleColor: "#b6c1cd",
-  selectedDayBackgroundColor: "#00adf5",
-  selectedDayTextColor: "#ffff",
-  todayTextColor: "#00adf5",
-  dayTextColor: "#2d4150",
-  textDisabledColor: "#dd99ee",
-};
-
-// Kuukausien nimet kalenterikomponenttiin
-LocaleConfig.locales["fi"] = {
-  monthNames: [
-    "Tammikuu",
-    "Helmikuu",
-    "Maaliskuu",
-    "Huhtikuu",
-    "Toukokuu",
-    "Kesäkuu",
-    "Heinäkuu",
-    "Elokuu",
-    "Syyskuu",
-    "Lokakuu",
-    "Marraskuu",
-    "Joulukuu",
-  ],
-  // Kuukausien nimet lyhennettyinä kalenterikomponenttiin
-  monthNamesShort: [
-    "Tammi",
-    "Helmi",
-    "Maalis",
-    "Huhti",
-    "Touko",
-    "Kesä",
-    "Heinä",
-    "Elo",
-    "Syys",
-    "Loka",
-    "Marras",
-    "Joulu",
-  ],
-  // Päivien nimet kalenterikomponenttiin
-  dayNames: [
-    "Maanantai",
-    "Tiistai",
-    "Keskiviikko",
-    "Torstai",
-    "Perjantai",
-    "Lauantai",
-    "Sunnuntai",
-  ],
-  //Päivien nimet lyhennettyinä ja annetaan tämän hetkiselle päivälle suomenkielinen nimi
-  dayNamesShort: ["Ma", "Ti", "Ke", "To", "Pe", "La", "Su"],
-  today: "Tänään",
-};
-
-// Asetetaan oletuskieleksi suomi
-LocaleConfig.defaultLocale = "fi";
 
 // Tyylit sovelluksen asetteluun ja kalenterin ulkoasuun
 const styles = StyleSheet.create({
