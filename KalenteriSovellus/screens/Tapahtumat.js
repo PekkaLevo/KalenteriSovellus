@@ -21,20 +21,46 @@ const calendarTheme = {
 // Kuukausien nimet kalenterikomponenttiin
 LocaleConfig.locales["fi"] = {
   monthNames: [
-    "Tammikuu","Helmikuu","Maaliskuu","Huhtikuu","Toukokuu","Kesäkuu",
-    "Heinäkuu","Elokuu","Syyskuu","Lokakuu","Marraskuu","Joulukuu",
+    "Tammikuu",
+    "Helmikuu",
+    "Maaliskuu",
+    "Huhtikuu",
+    "Toukokuu",
+    "Kesäkuu",
+    "Heinäkuu",
+    "Elokuu",
+    "Syyskuu",
+    "Lokakuu",
+    "Marraskuu",
+    "Joulukuu",
   ],
   // Kuukausien nimet lyhennettyinä kalenterikomponenttiin
   monthNamesShort: [
-    "Tammi","Helmi","Maalis","Huhti","Touko","Kesä",
-    "Heinä","Elo","Syys","Loka","Marras","Joulu",
+    "Tammi",
+    "Helmi",
+    "Maalis",
+    "Huhti",
+    "Touko",
+    "Kesä",
+    "Heinä",
+    "Elo",
+    "Syys",
+    "Loka",
+    "Marras",
+    "Joulu",
   ],
   // Päivien nimet kalenterikomponenttiin
   dayNames: [
-    "Maanantai","Tiistai","Keskiviikko","Torstai","Perjantai","Lauantai","Sunnuntai",
+    "Maanantai",
+    "Tiistai",
+    "Keskiviikko",
+    "Torstai",
+    "Perjantai",
+    "Lauantai",
+    "Sunnuntai",
   ],
   // Päivien nimet lyhennettyinä ja annetaan tämän hetkiselle päivälle suomenkielinen nimi
-  dayNamesShort: ["Ma","Ti","Ke","To","Pe","La","Su"],
+  dayNamesShort: ["Ma", "Ti", "Ke", "To", "Pe", "La", "Su"],
   today: "Tänään",
 };
 
@@ -61,7 +87,7 @@ export default function Tapahtumat({ navigation }) {
           calendarWidth={SCREEN_WIDTH}
           style={styles.calendar}
           theme={calendarTheme}
-          pastScrollRange={50}   // Max määrä kuukausia, joita voi selata taaksepäin
+          pastScrollRange={50} // Max määrä kuukausia, joita voi selata taaksepäin
           futureScrollRange={50} // Max määrä kuukausia, joita voi selata eteenpäin
           onDayPress={(day) => setSelected(day.dateString)} // Päivän valinta
           markedDates={{
@@ -74,6 +100,17 @@ export default function Tapahtumat({ navigation }) {
           showScrollIndicator={false}
         />
       </View>
+
+      <Text
+        onPress={() =>
+          navigation.navigate("UusiTapahtuma", {
+            paiva: selected, // voidaan antaa valittu päivä lomakkeelle
+          })
+        }
+        style={{ marginTop: 16, color: "green", fontWeight: "bold" }}
+      >
+        Lisää tapahtuma
+      </Text>
 
       {/* Valittu päivä ja linkki karttaan*/}
       <View style={{ marginTop: 20, alignItems: "center" }}>
