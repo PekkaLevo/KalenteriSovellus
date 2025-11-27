@@ -1,7 +1,15 @@
 // importoidaan kirjastot
-import React, { useState } from "react";
-import { StyleSheet, Text, View, Dimensions } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
 import { CalendarList, LocaleConfig } from "react-native-calendars";
+import { getEventsForDay } from "../db/eventsDb";
 
 // Haetaan laitteen näytön leveys kalenterin leveyden asettamista varten
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -67,6 +75,11 @@ LocaleConfig.locales["fi"] = {
 // Asetetaan oletuskieleksi suomi
 LocaleConfig.defaultLocale = "fi";
 
+// Apufunktio: tämän päivän pvm YYYY-MM-DD
+function getToday() {
+  return new Date().toISOString().slice(0, 10);
+}
+
 /* -------------------
    Tapahtumat komponentti 
    Näyttää horisontaalisesti selattavan kalenterin
@@ -75,6 +88,26 @@ LocaleConfig.defaultLocale = "fi";
 export default function Tapahtumat({ navigation }) {
   // Valitun päivän tila
   const [selected, setSelected] = useState("");
+  const [events, setEvents] = useState([]);
+  // Lataa valitun päivän tapahtumat tietokannasta
+  const loadEvents = async (paiva) => {
+    try {
+      const rows = await getEventsForDay(paiva);
+      setEvents(rows);
+    } catch (e) {
+      console.error("Tapahtumien haku epäonnistui", e);
+    }
+  };
+  // Ladataan tapahtumat, kun valittu päivä muuttuu
+  useEffect(() => {
+    if (selected) {
+      loadEvents(selected);
+    }
+  }, [selected]);
+  // Ladataan myös kerran alussa
+  useEffect(() => {
+    loadEvents(selected);
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -109,7 +142,6 @@ export default function Tapahtumat({ navigation }) {
         }
         style={{ marginTop: 16, color: "green", fontWeight: "bold" }}
       >
-        Lisää tapahtuma
       </Text>
 
       {/* Valittu päivä ja linkki karttaan*/}
@@ -117,12 +149,8 @@ export default function Tapahtumat({ navigation }) {
         <Text>Valittu päivä: {selected || "-"}</Text>
         <Text
           onPress={() =>
-            navigation.navigate("Kartta", {
-              tapahtuma: {
-                otsikko: "Tapahtuma1",
-                lat: 60.1699,
-                lon: 24.9384,
-              },
+            navigation.navigate("UusiTapahtuma", {
+              paiva: selected,
             })
           }
           style={{
@@ -132,8 +160,35 @@ export default function Tapahtumat({ navigation }) {
             textDecorationLine: "underline",
           }}
         >
-          Näytä kartalta
+          Lisää tapahtuma
         </Text>
+      </View>
+      {/* Valitun päivän tapahtumat */}
+      <View style={styles.eventsContainer}>
+        <Text style={styles.eventsTitle}>Päivän tapahtumat</Text>
+
+        <FlatList
+          data={events}
+          keyExtractor={(item) => item.id.toString()}
+          ListEmptyComponent={
+            <Text style={{ textAlign: "center", color: "#777", marginTop: 8 }}>
+              Ei tapahtumia valitulle päivälle.
+            </Text>
+          }
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Kartta", { tapahtuma: item })}
+              onLongPress={() => handleLongPress(item.id)}
+              style={styles.eventItem}
+            >
+              <Text style={styles.eventTitle}>{item.otsikko}</Text>
+              <Text style={styles.eventLine}>
+                {item.paiva} klo {item.aika}
+              </Text>
+              <Text style={styles.eventLine}>{item.osoite}</Text>
+            </TouchableOpacity>
+          )}
+        />
       </View>
     </View>
   );
@@ -143,12 +198,12 @@ export default function Tapahtumat({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
     backgroundColor: "#fff",
   },
   calendarWrap: {
     width: SCREEN_WIDTH,
     alignSelf: "center",
+    marginTop: 16,
   },
   calendar: {
     borderWidth: 1,
@@ -156,5 +211,28 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH,
     height: 360,
     borderRadius: 12,
+  },
+  eventsContainer: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingTop: 8,
+  },
+  eventsTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 4,
+  },
+  eventItem: {
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+  },
+  eventTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  eventLine: {
+    fontSize: 14,
+    color: "#555",
   },
 });
