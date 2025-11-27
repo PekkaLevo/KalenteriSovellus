@@ -1,0 +1,1 @@
+export const GEOCODE_API_KEY = "APIKEY";

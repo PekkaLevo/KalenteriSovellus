@@ -1,6 +1,5 @@
-// Importit
 import React from "react";
-import { View } from "react-native";
+import { View, Text } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 
 /* ----------------------
@@ -12,15 +11,48 @@ export default function Kartta({ route }) {
   // otsikko, lat ja lon-tiedot saadaan navigoinnin mukana route-parametrista
   const tapahtuma = route.params?.tapahtuma || {
     otsikko: "paikka1",
-    lat: 60.1699,
-    lon: 24.3984,
+    lat: null,
+    lon: null,
+    osoite: "",
   };
 
-  const hasCoords = tapahtuma.lat && tapahtuma.lon;
+  const hasCoords =
+    typeof tapahtuma.lat === "number" &&
+    typeof tapahtuma.lon === "number" &&
+    !Number.isNaN(tapahtuma.lat) &&
+    !Number.isNaN(tapahtuma.lon);
 
+  // Jos ei ole koordinaatteja → näytetään vain informatiivinen teksti
+  if (!hasCoords) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          padding: 16,
+        }}
+      >
+        <Text style={{ fontSize: 16, textAlign: "center", marginBottom: 8 }}>
+          Tälle tapahtumalle ei ole tallennettu karttasijaintia.
+        </Text>
+        <Text
+          style={{
+            fontSize: 14,
+            textAlign: "center",
+            color: "#555",
+          }}
+        >
+          Tarkista osoite tai luo tapahtuma uudelleen,
+          kun geokoodaus on käytössä.
+        </Text>
+      </View>
+    );
+  }
+
+  // Kun koordinaatit on olemassa, näytetään kartta ja marker
   return (
     <View style={{ flex: 1 }}>
-      {/* MapView näyttää kartan */}
       <MapView
         style={{ flex: 1 }}
         initialRegion={{
@@ -30,10 +62,10 @@ export default function Kartta({ route }) {
           longitudeDelta: 0.02,
         }}
       >
-        {/* Marker osoittaa koordinaattien sijainnin */}
         <Marker
           coordinate={{ latitude: tapahtuma.lat, longitude: tapahtuma.lon }}
           title={tapahtuma.otsikko}
+          description={tapahtuma.osoite}
         />
       </MapView>
     </View>

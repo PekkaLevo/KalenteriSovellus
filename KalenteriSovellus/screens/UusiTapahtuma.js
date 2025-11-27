@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, Button, TextInput, Alert } from "react-native";
 import { insertEvent } from "../db/eventsDb";
-import { geocodeAddress } from "../utils/geokoodi";
+import { geocodeAddress } from "../utils/geocode";
 
 /*
   UusiTapahtuma-näkymä:
