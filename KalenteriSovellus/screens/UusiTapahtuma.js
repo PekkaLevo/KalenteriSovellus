@@ -11,14 +11,17 @@ import { geocodeAddress } from "../utils/geokoodi";
 */
 
 export default function UusiTapahtuma({ route, navigation }) {
-  const paiva = route.params?.paiva || ""; // päivä kalenterista (voi olla tyhjä)
+  const getToday = () => new Date().toISOString().slice(0, 10);
+
+  const alkuPaiva = route.params?.paiva || getToday();
+  const [paiva, setPaiva] = useState(alkuPaiva);
   const [otsikko, setOtsikko] = useState("");
   const [aika, setAika] = useState("");
   const [osoite, setOsoite] = useState("");
   const [kuvaus, setKuvaus] = useState("");
 
   const tallenna = async () => {
-    if (!otsikko.trim() || !paiva || !aika.trim() || !osoite - trim()) {
+    if (!otsikko.trim() || !paiva.trim() || !aika.trim() || !osoite.trim()) {
       Alert.alert("Virhe", "Täytä kaikki kentät.");
       return;
     }
@@ -49,8 +52,13 @@ export default function UusiTapahtuma({ route, navigation }) {
   // Näytetään lomake ja tallennuspainike
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Päivä: {paiva || "-"}</Text>
-
+      <Text style={styles.label}>Päivä</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="YYYY-MM-DD"
+        value={paiva}
+        onChangeText={setPaiva}
+      />
       <TextInput
         style={styles.input}
         placeholder="Otsikko"
