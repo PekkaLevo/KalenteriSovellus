@@ -141,8 +141,7 @@ export default function Tapahtumat({ navigation }) {
           })
         }
         style={{ marginTop: 16, color: "green", fontWeight: "bold" }}
-      >
-      </Text>
+      ></Text>
 
       {/* Valittu päivä ja linkki karttaan*/}
       <View style={{ marginTop: 20, alignItems: "center" }}>
@@ -186,6 +185,14 @@ export default function Tapahtumat({ navigation }) {
                 {item.paiva} klo {item.aika}
               </Text>
               <Text style={styles.eventLine}>{item.osoite}</Text>
+              <Text
+                style={{ marginTop: 4, color: "teal", fontSize: 13 }}
+                onPress={() =>
+                  navigation.navigate("MuokkaaTapahtuma", { event: item })
+                }
+              >
+                Muokkaa
+              </Text>
             </TouchableOpacity>
           )}
         />

@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Tapahtumat from "./screens/Tapahtumat";
 import Kartta from "./screens/Kartta";
 import UusiTapahtuma from "./screens/UusiTapahtuma";
+import MuokkaaTapahtuma from "./screens/MuokkaaTapahtuma";
 
 const Pino = createNativeStackNavigator();
 
@@ -27,6 +28,11 @@ export default function App() {
           name="UusiTapahtuma"
           component={UusiTapahtuma}
           options={{ headerTitle: "Uusi tapahtuma" }}
+        />
+        <Pino.Screen
+          name="MuokkaaTapahtuma"
+          component={MuokkaaTapahtuma}
+          options={{ headerTitle: "Muokkaa tapahtumaa" }}
         />
         <Pino.Screen
           name="Kartta"
