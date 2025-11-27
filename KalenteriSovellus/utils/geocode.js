@@ -1,3 +1,5 @@
+// Importit
+import { GEOCODE_API_KEY } from "../config/geocodeConfig";
 // Hakee osoitteelle koordinaatit (lat, lon) geocode.maps.co API:sta
 export async function geocodeAddress(osoite) {
   if (!osoite || !osoite.trim()) return null;

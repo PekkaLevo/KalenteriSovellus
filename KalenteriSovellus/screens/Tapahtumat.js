@@ -9,7 +9,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { CalendarList, LocaleConfig } from "react-native-calendars";
-import { getEventsForDay } from "../db/eventsDb";
+import { getEventsForDay, deleteEvent } from "../db/eventsDb";
+
 
 // Haetaan laitteen näytön leveys kalenterin leveyden asettamista varten
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
