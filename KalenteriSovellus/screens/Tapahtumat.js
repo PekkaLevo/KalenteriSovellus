@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { CalendarList, LocaleConfig } from "react-native-calendars";
 import { getEventsForDay, deleteEvent } from "../db/eventsDb";
+import { useIsFocused } from "@react-navigation/native";
 
 // Haetaan laitteen näytön leveys kalenterin leveyden asettamista varten
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -86,6 +87,8 @@ function getToday() {
    ja valitun päivän tapahtumat listalla.
 -------------------- */
 export default function Tapahtumat({ navigation }) {
+  // tarkistaa onko ruutu näkyvissä
+  const isFocused = useIsFocused();
   // Valitun päivän tila – aluksi tänään
   const [selected, setSelected] = useState(getToday());
   const [events, setEvents] = useState([]);
@@ -111,11 +114,12 @@ export default function Tapahtumat({ navigation }) {
   };
 
   // Ladataan tapahtumat, kun valittu päivä muuttuu
+  // TAI kun näkymä tulee takaisin fokukseen
   useEffect(() => {
     if (selected) {
       loadEvents(selected);
     }
-  }, [selected]);
+  }, [isFocused, selected]);
 
   // Ladataan myös kerran alussa
   useEffect(() => {
