@@ -5,6 +5,7 @@ node_modules/
 
 # Expo
 .expo/
+.expo-shared/
 dist/
 web-build/
 expo-env.d.ts
@@ -19,9 +20,13 @@ expo-env.d.ts
 *.mobileprovision
 
 # Metro
+.metro/
 .metro-health-check*
+babel-cache/
+.cache/
 
 # debug
+*.log
 npm-debug.*
 yarn-debug.*
 yarn-error.*
