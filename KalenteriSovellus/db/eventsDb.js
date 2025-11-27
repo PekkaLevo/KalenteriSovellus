@@ -91,3 +91,26 @@ export async function deleteEvent(id) {
     [id]
   );
 }
+// Päivitä olemassa oleva tapahtuma
+export async function updateEvent(event) {
+  const { id, otsikko, paiva, aika, osoite, lat, lon, kuvaus } = event;
+  const db = await getDb();
+
+  await db.runAsync(
+    `
+      UPDATE events
+      SET otsikko = ?, paiva = ?, aika = ?, osoite = ?, lat = ?, lon = ?, kuvaus = ?
+      WHERE id = ?;
+    `,
+    [
+      otsikko,
+      paiva,
+      aika,
+      osoite,
+      lat ?? null,
+      lon ?? null,
+      kuvaus ?? null,
+      id,
+    ]
+  );
+}
