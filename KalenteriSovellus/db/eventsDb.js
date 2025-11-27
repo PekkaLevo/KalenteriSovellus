@@ -1,3 +1,4 @@
+// Importit
 import * as SQLite from "expo-sqlite";
 
 // Avataan tietokanta ja luodaan taulu, jos sitä ei ole

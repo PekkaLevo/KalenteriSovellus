@@ -1,4 +1,4 @@
-// importoidaan kirjastot
+// Importit
 import React from "react";
 import { View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
@@ -15,6 +15,8 @@ export default function Kartta({ route }) {
     lat: 60.1699,
     lon: 24.3984,
   };
+
+  const hasCoords = tapahtuma.lat && tapahtuma.lon;
 
   return (
     <View style={{ flex: 1 }}>

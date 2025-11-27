@@ -1,7 +1,8 @@
-// importoidaan kirjastot
+// Importit
 import React, { useState } from "react";
 import { View, Text, StyleSheet, Button, TextInput, Alert } from "react-native";
 import { insertEvent } from "../db/eventsDb";
+import { geocodeAddress } from "../utils/geokoodi";
 
 /*
   UusiTapahtuma-näkymä:
@@ -18,21 +19,24 @@ export default function UusiTapahtuma({ route, navigation }) {
 
   const tallenna = async () => {
     if (!otsikko.trim() || !paiva || !aika.trim() || !osoite - trim()) {
-      Alert.alert("Virhe", "Täytä otsikko, päivä, aika ja osoite.");
+      Alert.alert("Virhe", "Täytä kaikki kentät.");
       return;
     }
 
-    const event = {
-      otsikko,
-      paiva,
-      aika,
-      osoite,
-      lat: null, // myöhemmin geokoodauksesta
-      lon: null,
-      kuvaus,
-    };
-
     try {
+      // Geokoodataan osoite → lat/lon
+      const geo = await geocodeAddress(osoite.trim());
+
+      const event = {
+        otsikko: otsikko.trim(),
+        paiva,
+        aika: aika.trim(),
+        osoite: osoite.trim(),
+        lat: geo?.lat ?? null,
+        lon: geo?.lon ?? null,
+        kuvaus: kuvaus.trim() || null,
+      };
+
       await insertEvent(event);
       navigation.goBack(); // palaa Tapahtumat-näkymään
     } catch (e) {
