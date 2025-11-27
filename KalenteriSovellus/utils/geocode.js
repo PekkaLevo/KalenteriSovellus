@@ -4,8 +4,13 @@ import { GEOCODE_API_KEY } from "../config/geocodeConfig";
 export async function geocodeAddress(osoite) {
   if (!osoite || !osoite.trim()) return null;
 
-  const url = `https://geocode.maps.co/search?q=${encodeURIComponent(osoite)}`;
+  const url = `https://geocode.maps.co/search?api_key=${GEOCODE_API_KEY}&q=${encodeURIComponent(
+    osoite
+  )}`;
 
+  console.log("GEOCODE URL:", url); // 🧪 debug
+  console.log("API KEY:", GEOCODE_API_KEY); // 🧪 debug
+  
   try {
     const res = await fetch(url);
 

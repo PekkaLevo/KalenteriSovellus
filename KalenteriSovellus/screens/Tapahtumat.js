@@ -11,7 +11,6 @@ import {
 import { CalendarList, LocaleConfig } from "react-native-calendars";
 import { getEventsForDay, deleteEvent } from "../db/eventsDb";
 
-
 // Haetaan laitteen näytön leveys kalenterin leveyden asettamista varten
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -84,12 +83,13 @@ function getToday() {
 /* -------------------
    Tapahtumat komponentti 
    Näyttää horisontaalisesti selattavan kalenterin
-   ja linkin Kartta-näkymään.
+   ja valitun päivän tapahtumat listalla.
 -------------------- */
 export default function Tapahtumat({ navigation }) {
-  // Valitun päivän tila
-  const [selected, setSelected] = useState("");
+  // Valitun päivän tila – aluksi tänään
+  const [selected, setSelected] = useState(getToday());
   const [events, setEvents] = useState([]);
+
   // Lataa valitun päivän tapahtumat tietokannasta
   const loadEvents = async (paiva) => {
     try {
@@ -99,12 +99,24 @@ export default function Tapahtumat({ navigation }) {
       console.error("Tapahtumien haku epäonnistui", e);
     }
   };
+
+  // Poisto pitkällä painalluksella
+  const handleLongPress = async (id) => {
+    try {
+      await deleteEvent(id);       // poista tietokannasta
+      await loadEvents(selected);  // päivitä lista
+    } catch (e) {
+      console.error("Tapahtuman poisto epäonnistui", e);
+    }
+  };
+
   // Ladataan tapahtumat, kun valittu päivä muuttuu
   useEffect(() => {
     if (selected) {
       loadEvents(selected);
     }
   }, [selected]);
+
   // Ladataan myös kerran alussa
   useEffect(() => {
     loadEvents(selected);
@@ -135,16 +147,7 @@ export default function Tapahtumat({ navigation }) {
         />
       </View>
 
-      <Text
-        onPress={() =>
-          navigation.navigate("UusiTapahtuma", {
-            paiva: selected, // voidaan antaa valittu päivä lomakkeelle
-          })
-        }
-        style={{ marginTop: 16, color: "green", fontWeight: "bold" }}
-      ></Text>
-
-      {/* Valittu päivä ja linkki karttaan*/}
+      {/* Valittu päivä ja linkki uuden tapahtuman lisäämiseen */}
       <View style={{ marginTop: 20, alignItems: "center" }}>
         <Text>Valittu päivä: {selected || "-"}</Text>
         <Text
@@ -163,6 +166,7 @@ export default function Tapahtumat({ navigation }) {
           Lisää tapahtuma
         </Text>
       </View>
+
       {/* Valitun päivän tapahtumat */}
       <View style={styles.eventsContainer}>
         <Text style={styles.eventsTitle}>Päivän tapahtumat</Text>
