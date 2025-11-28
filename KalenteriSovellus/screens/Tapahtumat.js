@@ -133,7 +133,7 @@ export default function Tapahtumat({ navigation }) {
     }
   };
 
-   // Ladataan tapahtumat, kun:
+  // Ladataan tapahtumat, kun:
   // - valittu päivä muuttuu TAI
   // - näkymä saa fokuksen (paluu lisäys-/muokkausnäkymästä)
   useEffect(() => {
@@ -188,7 +188,7 @@ export default function Tapahtumat({ navigation }) {
         </Text>
       </View>
 
-       {/* Valitun päivän tapahtumat */}
+      {/* Valitun päivän tapahtumat */}
       <View style={styles.eventsContainer}>
         <Text style={styles.eventsTitle}>Päivän tapahtumat</Text>
 
