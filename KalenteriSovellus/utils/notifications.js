@@ -8,3 +8,14 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 });
+
+// Pyydetään lupaa ilmoituksille
+export async function requestNotificationPermission() {
+  const { status } = await Notifications.getPermissionsAsync();
+
+  if (status !== "granted") {
+    const { status: newStatus } = await Notifications.requestPermissionsAsync();
+    return newStatus === "granted";
+  }
+  return true;
+}
