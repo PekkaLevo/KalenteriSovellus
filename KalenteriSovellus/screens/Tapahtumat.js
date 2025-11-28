@@ -9,7 +9,11 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { CalendarList, LocaleConfig } from "react-native-calendars";
-import { getEventsForDay, deleteEvent } from "../db/eventsDb";
+import {
+  getEventsForDay,
+  deleteEvent,
+  getUpcomingEvents,
+} from "../db/eventsDb";
 import { useIsFocused } from "@react-navigation/native";
 
 // Haetaan laitteen näytön leveys kalenterin leveyden asettamista varten
@@ -92,6 +96,7 @@ export default function Tapahtumat({ navigation }) {
   // Valitun päivän tila – aluksi tänään
   const [selected, setSelected] = useState(getToday());
   const [events, setEvents] = useState([]);
+  const [upcoming, setUpcoming] = useState([]);
 
   // Lataa valitun päivän tapahtumat tietokannasta
   const loadEvents = async (paiva) => {
@@ -103,28 +108,40 @@ export default function Tapahtumat({ navigation }) {
     }
   };
 
+  // Lataa kaikki tulevat tapahtumat (tästä päivästä eteenpäin)
+  const loadUpcoming = async () => {
+    try {
+      const rows = await getUpcomingEvents(); // ORDER BY paiva, aika
+      const today = getToday();
+
+      // suodatetaan vain tästä päivästä eteenpäin
+      const filtered = rows.filter((ev) => ev.paiva >= today);
+      setUpcoming(filtered);
+    } catch (e) {
+      console.error("Tulevien tapahtumien haku epäonnistui", e);
+    }
+  };
+
   // Poisto pitkällä painalluksella
   const handleLongPress = async (id) => {
     try {
-      await deleteEvent(id);       // poista tietokannasta
-      await loadEvents(selected);  // päivitä lista
+      await deleteEvent(id); // poista tietokannasta
+      await loadEvents(selected); // päivitä lista
+      await loadUpcoming(); // päivitä tulevat tapahtumat
     } catch (e) {
       console.error("Tapahtuman poisto epäonnistui", e);
     }
   };
 
-  // Ladataan tapahtumat, kun valittu päivä muuttuu
-  // TAI kun näkymä tulee takaisin fokukseen
+   // Ladataan tapahtumat, kun:
+  // - valittu päivä muuttuu TAI
+  // - näkymä saa fokuksen (paluu lisäys-/muokkausnäkymästä)
   useEffect(() => {
-    if (selected) {
+    if (isFocused && selected) {
       loadEvents(selected);
+      loadUpcoming();
     }
   }, [isFocused, selected]);
-
-  // Ladataan myös kerran alussa
-  useEffect(() => {
-    loadEvents(selected);
-  }, []);
 
   return (
     <View style={styles.container}>
@@ -171,7 +188,7 @@ export default function Tapahtumat({ navigation }) {
         </Text>
       </View>
 
-      {/* Valitun päivän tapahtumat */}
+       {/* Valitun päivän tapahtumat */}
       <View style={styles.eventsContainer}>
         <Text style={styles.eventsTitle}>Päivän tapahtumat</Text>
 
@@ -181,6 +198,42 @@ export default function Tapahtumat({ navigation }) {
           ListEmptyComponent={
             <Text style={{ textAlign: "center", color: "#777", marginTop: 8 }}>
               Ei tapahtumia valitulle päivälle.
+            </Text>
+          }
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Kartta", { tapahtuma: item })}
+              onLongPress={() => handleLongPress(item.id)}
+              style={styles.eventItem}
+            >
+              <Text style={styles.eventTitle}>{item.otsikko}</Text>
+              <Text style={styles.eventLine}>
+                {item.paiva} klo {item.aika}
+              </Text>
+              <Text style={styles.eventLine}>{item.osoite}</Text>
+              <Text
+                style={{ marginTop: 4, color: "teal", fontSize: 13 }}
+                onPress={() =>
+                  navigation.navigate("MuokkaaTapahtuma", { event: item })
+                }
+              >
+                Muokkaa
+              </Text>
+            </TouchableOpacity>
+          )}
+        />
+      </View>
+
+      {/* Tulevat tapahtumat */}
+      <View style={styles.upcomingContainer}>
+        <Text style={styles.eventsTitle}>Tulevat tapahtumat</Text>
+
+        <FlatList
+          data={upcoming}
+          keyExtractor={(item) => item.id.toString()}
+          ListEmptyComponent={
+            <Text style={{ textAlign: "center", color: "#777", marginTop: 8 }}>
+              Ei tulevia tapahtumia.
             </Text>
           }
           renderItem={({ item }) => (
@@ -250,5 +303,11 @@ const styles = StyleSheet.create({
   eventLine: {
     fontSize: 14,
     color: "#555",
+  },
+  upcomingContainer: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 8,
   },
 });
