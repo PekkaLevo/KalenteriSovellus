@@ -13,7 +13,7 @@ const Pino = createNativeStackNavigator();
 /* --------------
   Pääkomponentti
   ---------------
-  Navigointi + Tapahtumat- ja Kartta-ruudut
+  Navigointi + Tapahtumat-, UusiTapahtuma-, MuokkaaTapahtuma- ja Kartta-ruudut
 */
 export default function App() {
   return (

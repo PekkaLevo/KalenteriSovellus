@@ -101,6 +101,12 @@ export default function Kartta({ route }) {
             {tapahtuma.osoite}
           </Text>
         ) : null}
+        {/* Näytetään kuvaus jos se on olemassa */}
+        {tapahtuma.kuvaus ? (
+          <Text style={{ color: "#4b5563", marginTop: 6 }}>
+            {tapahtuma.kuvaus}
+          </Text>
+        ) : null}
         {locationError && (
           <Text style={{ color: "red", marginTop: 4, fontSize: 12 }}>
             {locationError}

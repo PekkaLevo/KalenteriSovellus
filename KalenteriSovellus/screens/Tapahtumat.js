@@ -192,6 +192,10 @@ export default function Tapahtumat({ navigation }) {
                 {item.paiva} klo {item.aika}
               </Text>
               <Text style={styles.eventLine}>{item.osoite}</Text>
+              {/* Näytetään kuvaus vain jos se ei ole tyhjä */}
+              {item.kuvaus ? (
+                <Text style={styles.eventDescription}>{item.kuvaus}</Text>
+              ) : null}
               <Text
                 style={{ marginTop: 4, color: "teal", fontSize: 13 }}
                 onPress={() =>
@@ -295,5 +299,10 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 16,
     paddingTop: 12,
+  },
+  eventDescription: {
+    fontSize: 13,
+    color: "#4b5563",
+    marginTop: 4,
   },
 });
