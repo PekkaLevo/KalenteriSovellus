@@ -1,8 +1,19 @@
 // Importit
 import React, { useState, useEffect } from "react";
-import {StyleSheet, Text, View, Dimensions, SectionList, TouchableOpacity,} from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  SectionList,
+  TouchableOpacity,
+} from "react-native";
 import { CalendarList, LocaleConfig } from "react-native-calendars";
-import { getEventsForDay, deleteEvent, getUpcomingEvents,} from "../db/eventsDb";
+import {
+  getEventsForDay,
+  deleteEvent,
+  getUpcomingEvents,
+} from "../db/eventsDb";
 import { useIsFocused } from "@react-navigation/native";
 
 // Haetaan laitteen näytön leveys kalenterin leveyden asettamista varten
@@ -22,14 +33,23 @@ const calendarTheme = {
 
 // Kuukausien nimet kalenterikomponenttiin
 LocaleConfig.locales["fi"] = {
-  monthNames: [ "Tammikuu", "Helmikuu", "Maaliskuu", "Huhtikuu", "Toukokuu", "Kesäkuu", "Heinäkuu", "Elokuu",
-    "Syyskuu", "Lokakuu", "Marraskuu", "Joulukuu",],
+  monthNames: [
+    "Tammikuu", "Helmikuu", "Maaliskuu", "Huhtikuu", "Toukokuu", "Kesäkuu", "Heinäkuu",
+    "Elokuu", "Syyskuu", "Lokakuu", "Marraskuu", "Joulukuu",],
   // Kuukausien nimet lyhennettyinä kalenterikomponenttiin
-  monthNamesShort: [ "Tammi", "Helmi", "Maalis", "Huhti", "Touko", "Kesä",
+  monthNamesShort: [
+    "Tammi", "Helmi", "Maalis", "Huhti", "Touko", "Kesä",
     "Heinä", "Elo", "Syys", "Loka", "Marras", "Joulu",],
   // Päivien nimet kalenterikomponenttiin
-  dayNames: [ "Maanantai", "Tiistai", "Keskiviikko", "Torstai",
-    "Perjantai", "Lauantai", "Sunnuntai",],
+  dayNames: [
+    "Maanantai",
+    "Tiistai",
+    "Keskiviikko",
+    "Torstai",
+    "Perjantai",
+    "Lauantai",
+    "Sunnuntai",
+  ],
   // Päivien nimet lyhennettyinä ja annetaan tämän hetkiselle päivälle suomenkielinen nimi
   dayNamesShort: ["Ma", "Ti", "Ke", "To", "Pe", "La", "Su"],
   today: "Tänään",
@@ -101,10 +121,15 @@ export default function Tapahtumat({ navigation }) {
     }
   }, [isFocused, selected]);
 
+  const sections = [
+    { title: "Päivän tapahtumat", data: events },
+    { title: "Tulevat tapahtumat", data: upcoming },
+  ];
+
   return (
     <View style={styles.container}>
+      {/* Kalenteri ylhäällä */}
       <View style={styles.calendarWrap}>
-        {/* Kalenteri */}
         <CalendarList
           horizontal
           pagingEnabled
@@ -112,9 +137,9 @@ export default function Tapahtumat({ navigation }) {
           calendarWidth={SCREEN_WIDTH}
           style={styles.calendar}
           theme={calendarTheme}
-          pastScrollRange={50} // Max määrä kuukausia, joita voi selata taaksepäin
-          futureScrollRange={50} // Max määrä kuukausia, joita voi selata eteenpäin
-          onDayPress={(day) => setSelected(day.dateString)} // Päivän valinta
+          pastScrollRange={50}
+          futureScrollRange={50}
+          onDayPress={(day) => setSelected(day.dateString)}
           markedDates={{
             [selected]: {
               selected: true,
@@ -126,64 +151,66 @@ export default function Tapahtumat({ navigation }) {
         />
       </View>
 
-      {/* Tapahtumat: ensin päivän, sitten tulevat, yhtenä listana */}
-      <View style={styles.listContainer}>
-        <SectionList
-          sections={[
-            { title: "Päivän tapahtumat", data: events },
-            { title: "Tulevat tapahtumat", data: upcoming },
-          ]}
-          keyExtractor={(item) => item.id.toString()}
-          renderSectionHeader={({ section }) =>
-            section.data.length > 0 ? (
-              <Text style={styles.eventsTitle}>{section.title}</Text>
-            ) : null
-          }
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              onPress={() => navigation.navigate("Kartta", { tapahtuma: item })}
-              onLongPress={() => handleLongPress(item.id)}
-              style={styles.eventItem}
-            >
-              <Text style={styles.eventTitle}>{item.otsikko}</Text>
-              <Text style={styles.eventLine}>
-                {item.paiva} klo {item.aika}
-              </Text>
-              <Text style={styles.eventLine}>{item.osoite}</Text>
-              {/* Näytetään kuvaus vain jos se ei ole tyhjä */}
-              {item.kuvaus ? (
-                <Text style={styles.eventDescription}>{item.kuvaus}</Text>
-              ) : null}
-              <Text
-                style={{ marginTop: 4, color: "teal", fontSize: 13 }}
-                onPress={() =>
-                  navigation.navigate("MuokkaaTapahtuma", { event: item })
-                }
-              >
-                Muokkaa
-              </Text>
-            </TouchableOpacity>
-          )}
-          ListEmptyComponent={
-            <Text
-              style={{
-                textAlign: "center",
-                color: "#777",
-                marginTop: 12,
-                fontSize: 14,
-              }}
-            >
-              Ei tapahtumia.
+      {/* SectionList + header, jossa Valittu päivä + Lisää tapahtuma */}
+      <SectionList
+        sections={sections}
+        keyExtractor={(item) => item.id.toString()}
+        style={styles.sections}
+        contentContainerStyle={styles.sectionContent}
+        ListHeaderComponent={
+          <View style={styles.headerBlock}>
+            <Text style={styles.selectedText}>
+              Valittu päivä: {selected || "-"}
             </Text>
-          }
-          contentContainerStyle={{ paddingBottom: 16 }}
-        />
-      </View>
+            <Text
+              style={styles.addLink}
+              onPress={() =>
+                navigation.navigate("UusiTapahtuma", { paiva: selected })
+              }
+            >
+              Lisää tapahtuma
+            </Text>
+          </View>
+        }
+        renderSectionHeader={({ section }) => (
+          <Text style={styles.sectionTitle}>{section.title}</Text>
+        )}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>
+            Ei tapahtumia. Lisää uusi tapahtuma valitulle päivälle.
+          </Text>
+        }
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Kartta", { tapahtuma: item })}
+            onLongPress={() => handleLongPress(item.id)}
+            style={styles.eventItem}
+          >
+            <Text style={styles.eventTitle}>{item.otsikko}</Text>
+            <Text style={styles.eventLine}>
+              {item.paiva} klo {item.aika}
+            </Text>
+            <Text style={styles.eventLine}>{item.osoite}</Text>
+            {item.kuvaus ? (
+              <Text style={styles.eventDescription}>{item.kuvaus}</Text>
+            ) : null}
+            <Text
+              style={styles.editLink}
+              onPress={() =>
+                navigation.navigate("MuokkaaTapahtuma", { event: item })
+              }
+            >
+              Muokkaa
+            </Text>
+          </TouchableOpacity>
+        )}
+      />
     </View>
   );
 }
 
 // Tyylit sovelluksen asetteluun ja kalenterin ulkoasuun
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -201,66 +228,59 @@ const styles = StyleSheet.create({
     height: 360,
     borderRadius: 12,
   },
-  eventsTitle: {
-    fontSize: 18,
+  sections: {
+    flex: 1,
+  },
+  sectionContent: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+  },
+  headerBlock: {
+    marginTop: 12,
+    marginBottom: 8,
+    alignItems: "center",
+  },
+  selectedText: {
+    fontSize: 14,
+  },
+  addLink: {
+    marginTop: 8,
+    color: "green",
     fontWeight: "bold",
+    textDecorationLine: "underline",
+  },
+  sectionTitle: {
+    marginTop: 12,
     marginBottom: 4,
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  emptyText: {
+    textAlign: "center",
+    color: "#777",
+    marginTop: 8,
   },
   eventItem: {
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-    backgroundColor: "#f9fafb",
-    marginBottom: 8,
-
-    // varjostetaan hieman
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 1.5,
-    elevation: 1,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
   },
   eventTitle: {
     fontSize: 16,
     fontWeight: "600",
-    marginBottom: 2,
   },
   eventLine: {
     fontSize: 14,
     color: "#555",
   },
-  selectedBar: {
-    marginTop: 16,
-    marginBottom: 8,
-    paddingHorizontal: 16,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  selectedLabel: {
-    fontSize: 13,
-    color: "#6b7280",
-  },
-  selectedValue: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#111827",
-    marginTop: 2,
-  },
-  addLink: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "teal",
-    textDecorationLine: "underline",
-  },
-  listContainer: {
-    flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 12,
-  },
   eventDescription: {
     fontSize: 13,
     color: "#4b5563",
     marginTop: 4,
+  },
+  editLink: {
+    marginTop: 4,
+    color: "teal",
+    fontSize: 13,
   },
 });
