@@ -5,7 +5,7 @@ import {
   Text,
   View,
   Dimensions,
-  FlatList,
+  SectionList,
   TouchableOpacity,
 } from "react-native";
 import { CalendarList, LocaleConfig } from "react-native-calendars";
@@ -168,36 +168,18 @@ export default function Tapahtumat({ navigation }) {
         />
       </View>
 
-      {/* Valittu päivä ja linkki uuden tapahtuman lisäämiseen */}
-      <View style={styles.selectedBar}>
-        <View>
-          <Text style={styles.selectedLabel}>Valittu päivä</Text>
-          <Text style={styles.selectedValue}>{selected || "-"}</Text>
-        </View>
-
-        <Text
-          onPress={() =>
-            navigation.navigate("UusiTapahtuma", {
-              paiva: selected,
-            })
-          }
-          style={styles.addLink}
-        >
-          + Lisää tapahtuma
-        </Text>
-      </View>
-
-      {/* Valitun päivän tapahtumat */}
-      <View style={styles.eventsContainer}>
-        <Text style={styles.eventsTitle}>Päivän tapahtumat</Text>
-
-        <FlatList
-          data={events}
+      {/* Tapahtumat: ensin päivän, sitten tulevat, yhtenä listana */}
+      <View style={styles.listContainer}>
+        <SectionList
+          sections={[
+            { title: "Päivän tapahtumat", data: events },
+            { title: "Tulevat tapahtumat", data: upcoming },
+          ]}
           keyExtractor={(item) => item.id.toString()}
-          ListEmptyComponent={
-            <Text style={{ textAlign: "center", color: "#777", marginTop: 8 }}>
-              Ei tapahtumia valitulle päivälle.
-            </Text>
+          renderSectionHeader={({ section }) =>
+            section.data.length > 0 ? (
+              <Text style={styles.eventsTitle}>{section.title}</Text>
+            ) : null
           }
           renderItem={({ item }) => (
             <TouchableOpacity
@@ -220,42 +202,19 @@ export default function Tapahtumat({ navigation }) {
               </Text>
             </TouchableOpacity>
           )}
-        />
-      </View>
-
-      {/* Tulevat tapahtumat */}
-      <View style={styles.upcomingContainer}>
-        <Text style={styles.eventsTitle}>Tulevat tapahtumat</Text>
-
-        <FlatList
-          data={upcoming}
-          keyExtractor={(item) => item.id.toString()}
           ListEmptyComponent={
-            <Text style={{ textAlign: "center", color: "#777", marginTop: 8 }}>
-              Ei tulevia tapahtumia.
+            <Text
+              style={{
+                textAlign: "center",
+                color: "#777",
+                marginTop: 12,
+                fontSize: 14,
+              }}
+            >
+              Ei tapahtumia.
             </Text>
           }
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              onPress={() => navigation.navigate("Kartta", { tapahtuma: item })}
-              onLongPress={() => handleLongPress(item.id)}
-              style={styles.eventItem}
-            >
-              <Text style={styles.eventTitle}>{item.otsikko}</Text>
-              <Text style={styles.eventLine}>
-                {item.paiva} klo {item.aika}
-              </Text>
-              <Text style={styles.eventLine}>{item.osoite}</Text>
-              <Text
-                style={{ marginTop: 4, color: "teal", fontSize: 13 }}
-                onPress={() =>
-                  navigation.navigate("MuokkaaTapahtuma", { event: item })
-                }
-              >
-                Muokkaa
-              </Text>
-            </TouchableOpacity>
-          )}
+          contentContainerStyle={{ paddingBottom: 16 }}
         />
       </View>
     </View>
@@ -279,12 +238,6 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH,
     height: 360,
     borderRadius: 12,
-  },
-   eventsContainer: {
-    flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 4,
   },
   eventsTitle: {
     fontSize: 18,
@@ -314,12 +267,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#555",
   },
-  upcomingContainer: {
-    flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 16,
-  },
   selectedBar: {
     marginTop: 16,
     marginBottom: 8,
@@ -343,5 +290,10 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "teal",
     textDecorationLine: "underline",
+  },
+  listContainer: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingTop: 12,
   },
 });
