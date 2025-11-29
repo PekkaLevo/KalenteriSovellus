@@ -169,22 +169,21 @@ export default function Tapahtumat({ navigation }) {
       </View>
 
       {/* Valittu päivä ja linkki uuden tapahtuman lisäämiseen */}
-      <View style={{ marginTop: 20, alignItems: "center" }}>
-        <Text>Valittu päivä: {selected || "-"}</Text>
+      <View style={styles.selectedBar}>
+        <View>
+          <Text style={styles.selectedLabel}>Valittu päivä</Text>
+          <Text style={styles.selectedValue}>{selected || "-"}</Text>
+        </View>
+
         <Text
           onPress={() =>
             navigation.navigate("UusiTapahtuma", {
               paiva: selected,
             })
           }
-          style={{
-            marginTop: 10,
-            color: "green",
-            fontWeight: "bold",
-            textDecorationLine: "underline",
-          }}
+          style={styles.addLink}
         >
-          Lisää tapahtuma
+          + Lisää tapahtuma
         </Text>
       </View>
 
@@ -281,10 +280,11 @@ const styles = StyleSheet.create({
     height: 360,
     borderRadius: 12,
   },
-  eventsContainer: {
+   eventsContainer: {
     flex: 1,
     paddingHorizontal: 16,
     paddingTop: 8,
+    paddingBottom: 4,
   },
   eventsTitle: {
     fontSize: 18,
@@ -292,13 +292,23 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   eventItem: {
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    backgroundColor: "#f9fafb",
+    marginBottom: 8,
+
+    // varjostetaan hieman
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 1.5,
+    elevation: 1,
   },
   eventTitle: {
     fontSize: 16,
     fontWeight: "600",
+    marginBottom: 2,
   },
   eventLine: {
     fontSize: 14,
@@ -308,6 +318,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 16,
     paddingTop: 8,
-    paddingBottom: 8,
+    paddingBottom: 16,
   },
 });
