@@ -54,6 +54,7 @@ export default function MuokkaaTapahtuma({ route, navigation }) {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Muokkaa tapahtumaa</Text>
       <Text style={styles.label}>Päivä</Text>
       <TextInput
         style={styles.input}
@@ -106,5 +107,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
     marginBottom: 12,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "700",
+    marginBottom: 16,
+    textAlign: "center",
+  },
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: "#fff",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginBottom: 12,
+    backgroundColor: "#f9fafb",
   },
 });
