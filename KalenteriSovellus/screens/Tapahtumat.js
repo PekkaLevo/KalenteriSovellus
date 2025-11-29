@@ -1,19 +1,8 @@
 // Importit
 import React, { useState, useEffect } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Dimensions,
-  SectionList,
-  TouchableOpacity,
-} from "react-native";
+import {StyleSheet, Text, View, Dimensions, SectionList, TouchableOpacity,} from "react-native";
 import { CalendarList, LocaleConfig } from "react-native-calendars";
-import {
-  getEventsForDay,
-  deleteEvent,
-  getUpcomingEvents,
-} from "../db/eventsDb";
+import { getEventsForDay, deleteEvent, getUpcomingEvents,} from "../db/eventsDb";
 import { useIsFocused } from "@react-navigation/native";
 
 // Haetaan laitteen näytön leveys kalenterin leveyden asettamista varten
@@ -33,45 +22,14 @@ const calendarTheme = {
 
 // Kuukausien nimet kalenterikomponenttiin
 LocaleConfig.locales["fi"] = {
-  monthNames: [
-    "Tammikuu",
-    "Helmikuu",
-    "Maaliskuu",
-    "Huhtikuu",
-    "Toukokuu",
-    "Kesäkuu",
-    "Heinäkuu",
-    "Elokuu",
-    "Syyskuu",
-    "Lokakuu",
-    "Marraskuu",
-    "Joulukuu",
-  ],
+  monthNames: [ "Tammikuu", "Helmikuu", "Maaliskuu", "Huhtikuu", "Toukokuu", "Kesäkuu", "Heinäkuu", "Elokuu",
+    "Syyskuu", "Lokakuu", "Marraskuu", "Joulukuu",],
   // Kuukausien nimet lyhennettyinä kalenterikomponenttiin
-  monthNamesShort: [
-    "Tammi",
-    "Helmi",
-    "Maalis",
-    "Huhti",
-    "Touko",
-    "Kesä",
-    "Heinä",
-    "Elo",
-    "Syys",
-    "Loka",
-    "Marras",
-    "Joulu",
-  ],
+  monthNamesShort: [ "Tammi", "Helmi", "Maalis", "Huhti", "Touko", "Kesä",
+    "Heinä", "Elo", "Syys", "Loka", "Marras", "Joulu",],
   // Päivien nimet kalenterikomponenttiin
-  dayNames: [
-    "Maanantai",
-    "Tiistai",
-    "Keskiviikko",
-    "Torstai",
-    "Perjantai",
-    "Lauantai",
-    "Sunnuntai",
-  ],
+  dayNames: [ "Maanantai", "Tiistai", "Keskiviikko", "Torstai",
+    "Perjantai", "Lauantai", "Sunnuntai",],
   // Päivien nimet lyhennettyinä ja annetaan tämän hetkiselle päivälle suomenkielinen nimi
   dayNamesShort: ["Ma", "Ti", "Ke", "To", "Pe", "La", "Su"],
   today: "Tänään",

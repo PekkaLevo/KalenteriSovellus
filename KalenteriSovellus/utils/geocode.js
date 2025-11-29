@@ -7,9 +7,6 @@ export async function geocodeAddress(osoite) {
   const url = `https://geocode.maps.co/search?api_key=${GEOCODE_API_KEY}&q=${encodeURIComponent(
     osoite
   )}`;
-
-  console.log("GEOCODE URL:", url); // 🧪 debug
-  console.log("API KEY:", GEOCODE_API_KEY); // 🧪 debug
   
   try {
     const res = await fetch(url);
