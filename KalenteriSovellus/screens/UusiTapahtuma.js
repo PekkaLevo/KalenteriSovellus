@@ -78,7 +78,7 @@ export default function UusiTapahtuma({ route, navigation }) {
       />
       <TextInput
         style={styles.input}
-        placeholder="Osoite"
+        placeholder="Osoite (katu, numero, kaupunki)"//lisätään myös kaupunki, jotta osoitteen sijainti on oikein
         value={osoite}
         onChangeText={setOsoite}
       />

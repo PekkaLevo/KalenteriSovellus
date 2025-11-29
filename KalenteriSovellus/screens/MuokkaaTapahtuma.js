@@ -81,7 +81,7 @@ export default function MuokkaaTapahtuma({ route, navigation }) {
         style={styles.input}
         value={osoite}
         onChangeText={setOsoite}
-        placeholder="Osoite"
+        placeholder="Osoite (katu, numero, kaupunki)" //lisätään myös kaupunki, jotta osoitteen sijainti on oikein
       />
 
       <TextInput
