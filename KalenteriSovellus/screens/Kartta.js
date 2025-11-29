@@ -52,7 +52,20 @@ export default function Kartta({ route }) {
 
   // Kun koordinaatit on olemassa, näytetään kartta ja marker
   return (
-    <View style={{ flex: 1 }}>
+     <View style={{ flex: 1 }}>
+      <View style={{ padding: 12 }}>
+        <Text style={{ fontSize: 16, fontWeight: "600" }}>
+          {tapahtuma.otsikko}
+        </Text>
+        <Text style={{ color: "#555" }}>
+          {tapahtuma.paiva} klo {tapahtuma.aika}
+        </Text>
+        {tapahtuma.osoite ? (
+          <Text style={{ color: "#555", marginTop: 2 }}>
+            {tapahtuma.osoite}
+          </Text>
+        ) : null}
+      </View>
       <MapView
         style={{ flex: 1 }}
         initialRegion={{
