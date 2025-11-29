@@ -320,4 +320,28 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 16,
   },
+  selectedBar: {
+    marginTop: 16,
+    marginBottom: 8,
+    paddingHorizontal: 16,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  selectedLabel: {
+    fontSize: 13,
+    color: "#6b7280",
+  },
+  selectedValue: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#111827",
+    marginTop: 2,
+  },
+  addLink: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "teal",
+    textDecorationLine: "underline",
+  },
 });
