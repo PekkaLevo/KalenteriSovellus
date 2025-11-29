@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, Button, TextInput, Alert } from "react-native";
 import { insertEvent } from "../db/eventsDb";
 import { geocodeAddress } from "../utils/geocode";
+import { scheduleEventNotification } from "../utils/notifications";
 
 /*
   UusiTapahtuma-näkymä:
@@ -41,6 +42,9 @@ export default function UusiTapahtuma({ route, navigation }) {
       };
 
       await insertEvent(event);
+      // Ajastetaan 60 min ennen tapahtumaa
+      await scheduleEventNotification(event, 60);
+
       navigation.goBack(); // palaa Tapahtumat-näkymään
     } catch (e) {
       console.error("Tapahtuman tallennus epäonnistui", e);
