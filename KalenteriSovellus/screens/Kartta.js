@@ -5,40 +5,36 @@ import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 
 /* ----------------------
-   Kartta-komponentti
-   - näyttää valitun tapahtuman sijainnin kartalla
-   - hakee käyttäjän nykyisen sijainnin (GPS)
-   - näyttää käyttäjän sijainnin sinisenä pisteenä (showsUserLocation)
+   Kartta komponentti
+   Näyttää tapahtuman sijainnin kartalla.
+   Lisäksi:
+   - hakee käyttäjän nykyisen sijainnin
+   - näyttää käyttäjän sijainnin erillisellä markkerilla
 ----------------------- */
 export default function Kartta({ route }) {
   // GPS-sijainnin tila
   const [location, setLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
-
-  // Kartan referenssi (mahdollistaa animateToRegion myöhemmin)
   const mapRef = useRef(null);
 
-  // Tapahtuma, joka tuotiin navigaation parametrina
+  // Haetaan tapahtuma navigaation avulla:
+  // otsikko, lat ja lon-tiedot saadaan navigoinnin mukana route-parametrista
   const tapahtuma = route.params?.tapahtuma || {
-    otsikko: "Tapahtuma",
+    otsikko: "paikka1",
     paiva: "",
     aika: "",
-    osoite: "",
     lat: null,
     lon: null,
+    osoite: "",
   };
 
-  // Tarkista onko tapahtumalla koordinaatit
   const hasCoords =
     typeof tapahtuma.lat === "number" &&
     typeof tapahtuma.lon === "number" &&
     !Number.isNaN(tapahtuma.lat) &&
     !Number.isNaN(tapahtuma.lon);
 
-  /* ----------------------
-     Haetaan käyttäjän nykyinen sijainti
-     expo-locationilla heti kun näkymä avataan.
-  ------------------------- */
+  // Haetaan käyttäjän nykyinen sijainti kun näkymä avataan
   useEffect(() => {
     (async () => {
       try {
@@ -49,20 +45,20 @@ export default function Kartta({ route }) {
         }
 
         const loc = await Location.getCurrentPositionAsync({});
-        setLocation({
+        const coords = {
           latitude: loc.coords.latitude,
           longitude: loc.coords.longitude,
-        });
+        };
+        setLocation(coords);
+        console.log("Nykyinen sijainti:", coords);
       } catch (e) {
         console.log("Sijainnin haku epäonnistui", e);
+        setLocationError("Sijainnin haku epäonnistui");
       }
     })();
   }, []);
 
-  /* ----------------------
-     Jos tapahtumalla ei ole karttakoordinaatteja
-     → näytetään info-teksti eikä karttaa
-  ------------------------- */
+  // Jos ei ole koordinaatteja → näytetään vain informatiivinen teksti
   if (!hasCoords) {
     return (
       <View
@@ -76,21 +72,23 @@ export default function Kartta({ route }) {
         <Text style={{ fontSize: 16, textAlign: "center", marginBottom: 8 }}>
           Tälle tapahtumalle ei ole tallennettu karttasijaintia.
         </Text>
-        <Text style={{ fontSize: 14, textAlign: "center", color: "#555" }}>
-          Tarkista osoite tai luo tapahtuma uudelleen.
+        <Text
+          style={{
+            fontSize: 14,
+            textAlign: "center",
+            color: "#555",
+          }}
+        >
+          Tarkista osoite tai luo tapahtuma uudelleen, kun geokoodaus on
+          käytössä.
         </Text>
       </View>
     );
   }
 
-  /* ----------------------
-     Varsinainen karttanäkymä:
-     - näyttää tapahtuman markerin
-     - näyttää käyttäjän sijainnin (sininen piste)
-  ------------------------- */
+  // Kun koordinaatit on olemassa, näytetään kartta ja markkerit
   return (
     <View style={{ flex: 1 }}>
-      {/* Tapahtuman otsikko + tiedot */}
       <View style={{ padding: 12 }}>
         <Text style={{ fontSize: 16, fontWeight: "600" }}>
           {tapahtuma.otsikko}
@@ -103,9 +101,14 @@ export default function Kartta({ route }) {
             {tapahtuma.osoite}
           </Text>
         ) : null}
+        {locationError && (
+          <Text style={{ color: "red", marginTop: 4, fontSize: 12 }}>
+            {locationError}
+          </Text>
+        )}
       </View>
 
-      {/* Keskitä kartta -painike näkyy vain jos GPS löytyy */}
+      {/* "Sijainti" painike näkyy jos GPS-sijainti löytyi */}
       {location && (
         <View
           style={{
@@ -129,7 +132,6 @@ export default function Kartta({ route }) {
         </View>
       )}
 
-      {/* Kartta */}
       <MapView
         ref={mapRef}
         style={{ flex: 1 }}
@@ -139,8 +141,7 @@ export default function Kartta({ route }) {
           latitudeDelta: 0.02,
           longitudeDelta: 0.02,
         }}
-        showsUserLocation={true}     // ← näyttää sinisen pisteen
-        followsUserLocation={false}  // ← ei pakolla seuraa
+        showsUserLocation={true} // yrittää näyttää systeemin sinisen pisteen
       >
         {/* Tapahtuman marker */}
         <Marker
@@ -148,6 +149,16 @@ export default function Kartta({ route }) {
           title={tapahtuma.otsikko}
           description={tapahtuma.osoite}
         />
+
+        {/* Käyttäjän sijainti erillisellä markerilla (fallback siltä varalta,
+            että showsUserLocation ei piirrä sinistä pistettä Expo Go:ssa) */}
+        {location && (
+          <Marker
+            coordinate={location}
+            title="Nykyinen sijainti"
+            pinColor="blue"
+          />
+        )}
       </MapView>
     </View>
   );
