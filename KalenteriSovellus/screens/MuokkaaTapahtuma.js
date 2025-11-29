@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, Button, Alert } from "react-native";
 import { updateEvent } from "../db/eventsDb";
 import { geocodeAddress } from "../utils/geocode";
+import { scheduleEventNotification } from "../utils/notifications";
 
 export default function MuokkaaTapahtuma({ route, navigation }) {
   const alku = route.params?.event;
@@ -42,6 +43,8 @@ export default function MuokkaaTapahtuma({ route, navigation }) {
       };
 
       await updateEvent(event);
+       // Ajastetaan ilmoitus uudelle ajankohdalle (esim. 60 min ennen)
+      await scheduleEventNotification(event, 60);
       navigation.goBack();
     } catch (e) {
       console.error("Tapahtuman päivitys epäonnistui", e);
